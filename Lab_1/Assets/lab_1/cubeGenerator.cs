@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class CubeGenerator : MonoBehaviour
 {
+    [Range(15.0f, 75.0f)]
     public float radius = 25f;
+
+    [Range(5.0f, 50.0f)]
     public float maxAngle = 15f;
+
+    [Range(10.0f, 1000.0f)]
     public int numberOfCubes = 5;
+
+    public GameObject objectPrefab;
+
+    public bool ToggleVoidCubes;
 
     void Update()
     {
+        
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SpawnCubes();
+            Debug.Log("Pressed Space : Spawning " + numberOfCubes + " objects");
         }
     }
 
@@ -20,21 +31,18 @@ public class CubeGenerator : MonoBehaviour
     {
         for (int i = 0; i < numberOfCubes; i++)
         {
+            
             Vector3 randomPosition = transform.position + Random.insideUnitSphere * radius;
 
-            GameObject cube = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), randomPosition, Quaternion.identity);
+            GameObject cube = Instantiate(objectPrefab, randomPosition, Quaternion.identity);
 
             AngleChecker angleChecker = cube.AddComponent<AngleChecker>();
 
             angleChecker.Initialize(
-                maxAngle, // Maximum allowed angle
-                transform.position, // Center cube position
-
-                // Negative value to detect positive positions
-                new Vector3(-radius, 0, 0), // Xpos
-                new Vector3(0, -radius, 0), // Ypos
-                new Vector3(0, 0, -radius)  // Zpos
-            ); 
+                maxAngle,
+                transform, // Reference to the center cube (this object)
+                ToggleVoidCubes
+            );
         }
     }
 }

@@ -4,41 +4,33 @@ using UnityEngine;
 
 public class AngleChecker : MonoBehaviour
 {
-    private Vector3 centerCubePos;
-    private Vector3 selfPos;
-
-    private Vector3 Xpos;
-    private Vector3 Ypos;
-    private Vector3 Zpos;
+    private Transform centerCube;
+    private Vector3 selfPos; 
 
     private float maxAngle;
 
+    private bool voidCubes;
+
     void Update()
     {
-        // Disables White cubes on 'T' press
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            ToggleWhiteCubes();
-        }
+        // Check angles in real time
+        CheckAnglesForAllAxes();
 
-        // Recheck angles on 'S' press
-        if (Input.GetKeyDown(KeyCode.S))
+
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            CheckAnglesForAllAxes();
+            resetCubes();
+            Debug.Log("Pressed W : reset objects");
         }
     }
 
-    public void Initialize(float maximumAngle, Vector3 centerCubePosition, Vector3 Xposition, Vector3 Yposition, Vector3 Zposition)
+    public void Initialize(float maximumAngle, Transform centerCubeTransform, bool toggleVoidCubes)
     {
         maxAngle = maximumAngle;
-        centerCubePos = centerCubePosition;
-        Xpos = Xposition;
-        Ypos = Yposition;
-        Zpos = Zposition;
+        centerCube = centerCubeTransform;
         selfPos = transform.position;
+        voidCubes = toggleVoidCubes;
 
-        // Check all 3 axes at once
-        CheckAnglesForAllAxes();
     }
 
     public void CheckAnglesForAllAxes()
@@ -50,45 +42,49 @@ public class AngleChecker : MonoBehaviour
         isAngleValid |= CheckAngle("y");
         isAngleValid |= CheckAngle("z");
 
-        // If the angle is valid for at least one axis, leave it colored, else make it white
         if (!isAngleValid)
         {
-            GetComponent<Renderer>().material.color = Color.white;
+            if (voidCubes)
+            {
+                GetComponent<Renderer>().enabled = false;
+            } else
+            {
+                GetComponent<Renderer>().enabled = true;
+                GetComponent<Renderer>().material.color = Color.white;
+            }
         }
     }
 
-
     public bool CheckAngle(string axis)
     {
-        // Determine which axis to use (C)
+        // negative axes to color the cubes with positive coordinates
         Vector3 Cpos;
         switch (axis.ToLower())
         {
             case "x":
-                Cpos = Xpos;
+                Cpos = -centerCube.TransformDirection(Vector3.right) * maxAngle; // Local X axis
                 break;
             case "y":
-                Cpos = Ypos;
+                Cpos = -centerCube.TransformDirection(Vector3.up) * maxAngle; // Local Y axis
                 break;
             case "z":
-                Cpos = Zpos;
+                Cpos = -centerCube.TransformDirection(Vector3.forward) * maxAngle; // Local Z axis
                 break;
             default:
                 Debug.LogError("Invalid axis specified! Use 'x', 'y', or 'z'.");
                 return false;
         }
 
-
-        Vector3 AB = centerCubePos - selfPos;
-        Vector3 BC = Cpos - centerCubePos;
+        // Calculate vectors AB and BC
+        Vector3 AB = centerCube.position - selfPos;
+        Vector3 BC = Cpos - centerCube.position;
 
         // Calculate the angle between AB and BC
-        float angle = getAngle(AB, BC);
-        //float angle = Vector3.Angle(AB, BC); // Built in method to get angle
-
+        float angle = GetAngle(AB, BC);
 
         if (angle < maxAngle)
         {
+            GetComponent<Renderer>().enabled = true;
             // Change the cube's color based on the axis
             if (axis == "x")
             {
@@ -96,22 +92,22 @@ public class AngleChecker : MonoBehaviour
             }
             else if (axis == "y")
             {
-                GetComponent<Renderer>().material.color = Color.green; 
+                GetComponent<Renderer>().material.color = Color.green;
             }
             else if (axis == "z")
             {
-                GetComponent<Renderer>().material.color = Color.blue; 
+                GetComponent<Renderer>().material.color = Color.blue;
             }
 
             return true;
         }
         else
         {
-            return false; // invalid angle
+            return false; // Invalid angle
         }
     }
 
-    public float getAngle(Vector3 AB, Vector3 BC)
+    public float GetAngle(Vector3 AB, Vector3 BC)
     {
         // Calculate the dot product of AB and BC
         float dotProduct = Vector3.Dot(AB, BC);
@@ -130,12 +126,9 @@ public class AngleChecker : MonoBehaviour
         return Mathf.Acos(cosTheta) * Mathf.Rad2Deg;
     }
 
-
-    public void ToggleWhiteCubes()
+    public void resetCubes()
     {
-        if (GetComponent<Renderer>().material.color == Color.white)
-        {
-            gameObject.SetActive(false);
-        }
+        Destroy(gameObject);
+
     }
 }
