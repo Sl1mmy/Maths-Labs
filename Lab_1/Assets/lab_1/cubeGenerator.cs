@@ -7,7 +7,7 @@ public class CubeGenerator : MonoBehaviour
     [Range(15.0f, 75.0f)]
     public float radius = 25f;
 
-    [Range(5.0f, 50.0f)]
+    [Range(2.0f, 50.0f)]
     public float maxAngle = 15f;
 
     [Range(10.0f, 1000.0f)]
@@ -27,7 +27,7 @@ public class CubeGenerator : MonoBehaviour
         }
     }
 
-    void SpawnCubes()
+    public void SpawnCubes()
     {
         for (int i = 0; i < numberOfCubes; i++)
         {
