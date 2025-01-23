@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class cubeGenerator : MonoBehaviour
+public class CubeGenerator : MonoBehaviour
 {
-    // Public variables to adjust in the Unity Inspector
-    public float radius = 5f; // Radius around the object
-    public int numberOfCubes = 5; // Number of cubes to generate
+    public float radius = 25f;
+    public float maxAngle = 15f;
+    public int numberOfCubes = 5;
 
     void Update()
     {
-        // When Spacebar is pressed, spawn cubes
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SpawnCubes();
@@ -21,11 +20,21 @@ public class cubeGenerator : MonoBehaviour
     {
         for (int i = 0; i < numberOfCubes; i++)
         {
-            // Generate a random position within the specified radius around this object
             Vector3 randomPosition = transform.position + Random.insideUnitSphere * radius;
 
-            // Instantiate a cube at the random position
-            Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), randomPosition, Quaternion.identity);
+            GameObject cube = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), randomPosition, Quaternion.identity);
+
+            AngleChecker angleChecker = cube.AddComponent<AngleChecker>();
+
+            angleChecker.Initialize(
+                maxAngle, // Maximum allowed angle
+                transform.position, // Center cube position
+
+                // Negative value to detect positive positions
+                new Vector3(-radius, 0, 0), // Xpos
+                new Vector3(0, -radius, 0), // Ypos
+                new Vector3(0, 0, -radius)  // Zpos
+            ); 
         }
     }
 }
