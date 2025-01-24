@@ -74,4 +74,19 @@ public class UIController : MonoBehaviour
             spinSpeedValueText.text = value.ToString("F1");
         });
     }
+
+    void Update()
+    {
+        // Check if "Q" is pressed to quit the application
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Debug.Log("Quitting the application...");
+            Application.Quit();
+
+#if UNITY_EDITOR
+            // Exit play mode if running in the Unity Editor
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
+    }
 }
