@@ -16,9 +16,15 @@ public class carInstantiate : MonoBehaviour
         // creer body
         GameObject body = GameObject.CreatePrimitive(PrimitiveType.Cube);
         body.transform.parent = car.transform;
-        body.name = "body";
+        body.name = "carBody";
         body.transform.localPosition = new Vector3(0, 0.5f, 0);
         body.transform.localScale = new Vector3(1.75f, 0.6f, 3);
+
+        GameObject head = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        head.transform.parent = car.transform;
+        head.name = "carHead";
+        head.transform.localPosition = new Vector3(0, 0.8f, 0.9f);
+        head.transform.localScale = new Vector3(1.2f, 0.5f, 0.75f);
 
         // creer roues
         float wheelOffsetX = 1f;
