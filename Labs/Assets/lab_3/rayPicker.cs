@@ -2,16 +2,15 @@ using UnityEngine;
 
 public class RayPicker : MonoBehaviour
 {
-    public Camera sceneCam;  
+    public Camera sceneCam;
     public Material defaultMaterial;
-    public Material selectedMaterial;  
+    public Material selectedMaterial;
     private GameObject selectedObject;
 
     void Update()
     {
-        Ray ray = sceneCam.ScreenPointToRay(Input.mousePosition);
-
-        GameObject hitObject = CheckRayIntersection(ray);
+        Vector2 mousePos = Input.mousePosition;
+        GameObject hitObject = CheckObjectUnderMouse(mousePos);
 
         if (hitObject != null)
         {
@@ -36,76 +35,68 @@ public class RayPicker : MonoBehaviour
         }
     }
 
-    private GameObject CheckRayIntersection(Ray ray)
+    private GameObject CheckObjectUnderMouse(Vector2 mousePos)
     {
-        foreach (GameObject obj in GameObject.FindObjectsOfType<GameObject>())
+        GameObject closestObject = null;
+        float closestDepth = float.MaxValue;
+
+        foreach (Renderer renderer in FindObjectsOfType<Renderer>())
         {
-            Renderer renderer = obj.GetComponent<Renderer>();
-            if (renderer != null)
+            if (IsMouseOverObject(renderer, mousePos, out float objectDepth))
             {
-                Bounds bounds = renderer.bounds;
-
-                // Create planes for all sides of the object
-                Plane[] objectPlanes = GetObjectPlanes(obj, bounds);
-
-                foreach (var plane in objectPlanes)
+                if (objectDepth < closestDepth)
                 {
-                    if (RayIntersectsPlane(ray, plane, out Vector3 intersectionPoint))
-                    {
-                        if (IsPointInObjectBounds(obj, intersectionPoint))
-                        {
-                            return obj;
-                        }
-                    }
+                    closestDepth = objectDepth;
+                    closestObject = renderer.gameObject;
                 }
             }
         }
-        return null;
+
+        return closestObject;
     }
 
-    private Plane[] GetObjectPlanes(GameObject obj, Bounds bounds)
+    private bool IsMouseOverObject(Renderer renderer, Vector2 mousePos, out float depth)
     {
-        Plane[] planes = new Plane[6];
+        depth = float.MaxValue;
+        Bounds bounds = renderer.bounds;
+        Vector3[] worldCorners = new Vector3[8];
 
-        Vector3 position = obj.transform.position;
+        // Get bounding box corners
+        worldCorners[0] = bounds.min;
+        worldCorners[1] = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
+        worldCorners[2] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
+        worldCorners[3] = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
+        worldCorners[4] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
+        worldCorners[5] = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
+        worldCorners[6] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
+        worldCorners[7] = bounds.max;
 
-        // Top Plane (Y+)
-        planes[0] = new Plane(Vector3.up, position + Vector3.up * bounds.extents.y);
+        // Project to screen space
+        Vector2 minScreen = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 maxScreen = new Vector2(float.MinValue, float.MinValue);
+        float nearestZ = float.MaxValue;
 
-        // Bottom Plane (Y-)
-        planes[1] = new Plane(Vector3.down, position + Vector3.down * bounds.extents.y);
-
-        // Front Plane (Z+)
-        planes[2] = new Plane(Vector3.forward, position + Vector3.forward * bounds.extents.z);
-
-        // Back Plane (Z-)
-        planes[3] = new Plane(Vector3.back, position + Vector3.back * bounds.extents.z);
-
-        // Left Plane (X-)
-        planes[4] = new Plane(Vector3.left, position + Vector3.left * bounds.extents.x);
-
-        // Right Plane (X+)
-        planes[5] = new Plane(Vector3.right, position + Vector3.right * bounds.extents.x);
-
-        return planes;
-    }
-
-    private bool RayIntersectsPlane(Ray ray, Plane plane, out Vector3 intersectionPoint)
-    {
-        float t = 0;
-        intersectionPoint = Vector3.zero;
-        if (plane.Raycast(ray, out t) && t >= 0)
+        foreach (Vector3 corner in worldCorners)
         {
-            intersectionPoint = ray.GetPoint(t);  
+            Vector3 screenPoint = sceneCam.WorldToScreenPoint(corner);
+
+            if (screenPoint.z > 0) // Ensure it's in front of the camera
+            {
+                minScreen = Vector2.Min(minScreen, screenPoint);
+                maxScreen = Vector2.Max(maxScreen, screenPoint);
+                nearestZ = Mathf.Min(nearestZ, screenPoint.z);
+            }
+        }
+
+        // Check if the mouse is within the screen-space bounding box
+        if (mousePos.x >= minScreen.x && mousePos.x <= maxScreen.x &&
+            mousePos.y >= minScreen.y && mousePos.y <= maxScreen.y)
+        {
+            depth = nearestZ;
             return true;
         }
-        return false;
-    }
 
-    private bool IsPointInObjectBounds(GameObject obj, Vector3 point)
-    {
-        Bounds bounds = obj.GetComponent<Renderer>().bounds;
-        return bounds.Contains(point);
+        return false;
     }
 
     private void SetObjectMaterial(GameObject obj, Material mat)

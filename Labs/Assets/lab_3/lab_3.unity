@@ -318,6 +318,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1262826170}
   - component: {fileID: 1262826169}
+  - component: {fileID: 1262826171}
+  - component: {fileID: 1262826172}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -357,6 +359,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1262826171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262826168}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd63a5eeed1e0ac49872dfb9bf0f6fc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneCam: {fileID: 963194227}
+  defaultMaterial: {fileID: 2100000, guid: cb75806c346db274a9a55a2a4cdf3366, type: 2}
+  selectedMaterial: {fileID: 2100000, guid: 129bd84b420358548b5c778033bee17b, type: 2}
+--- !u!114 &1262826172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262826168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8490f44c50575014c96ed03680bc3513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneCam: {fileID: 963194227}
+  defaultMaterial: {fileID: 2100000, guid: cb75806c346db274a9a55a2a4cdf3366, type: 2}
+  selectedMaterial: {fileID: 2100000, guid: 129bd84b420358548b5c778033bee17b, type: 2}
 --- !u!1 &1854029588
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,6 +400,7 @@ GameObject:
   - component: {fileID: 1854029592}
   - component: {fileID: 1854029591}
   - component: {fileID: 1854029590}
+  - component: {fileID: 1854029593}
   m_Layer: 0
   m_Name: cubeInstance
   m_TagString: Untagged
@@ -440,6 +473,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1854029593
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854029588}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
