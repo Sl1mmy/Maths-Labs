@@ -35,11 +35,11 @@ public class ObjectPicker : MonoBehaviour
 
         if (selectionOnClick)
         {
-            if (hitObject != null && selectedObject != hitObject)
+            if (hitObject != null && selectedObject != hitObject) // object hit
             {
                 ChangeSelection(hitObject);
             }
-            else if (hitObject == null)
+            else if (hitObject == null) // no object
             {
                 DeselectObject();
             }
@@ -99,6 +99,7 @@ public class ObjectPicker : MonoBehaviour
         Vector3 center = bounds.center;
         Vector3 extents = bounds.extents;
 
+        // Direction, Point
         planes[0] = new Plane(Vector3.up, center + Vector3.up * extents.y);
         planes[1] = new Plane(Vector3.down, center - Vector3.up * extents.y);
         planes[2] = new Plane(Vector3.forward, center + Vector3.forward * extents.z);
@@ -114,7 +115,7 @@ public class ObjectPicker : MonoBehaviour
         float denominator = Vector3.Dot(plane.normal, direction);
         intersectionPoint = Vector3.zero;
 
-        if (Mathf.Abs(denominator) > 1e-6f)
+        if (Mathf.Abs(denominator) > 1e-6f) // Prevent division by zero
         {
             float t = -(Vector3.Dot(plane.normal, origin) + plane.distance) / denominator;
             if (t >= 0)
