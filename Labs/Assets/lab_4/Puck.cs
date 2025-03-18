@@ -72,20 +72,10 @@ public class Puck : MonoBehaviour
     {
         // Check wall collision and reflect puck
         if (position.z >= maxZ || position.z <= minZ)
-            ReflectPuck(Vector3.forward * Mathf.Sign(position.z));
+            CalculateReflectionDirection(direction, Vector3.forward * Mathf.Sign(position.z));
 
         if (position.x >= maxX || position.x <= minX)
-            ReflectPuck(Vector3.right * Mathf.Sign(position.x));
-    }
-
-    void ReflectPuck(Vector3 wallNormal)
-    {
-        Vector3 directionVector = new Vector3(Mathf.Sin(direction * Mathf.Deg2Rad), 0, Mathf.Cos(direction * Mathf.Deg2Rad));
-        Vector3 reflectedDirection = directionVector - 2 * Vector3.Dot(directionVector, wallNormal) * wallNormal; // Sphere-Plane formula
-        //Vector3 reflectedDirection = Vector3.Reflect(directionVector, wallNormal); // Built in method
-
-        direction = Mathf.Atan2(reflectedDirection.x, reflectedDirection.z) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, direction, 0f);
+            CalculateReflectionDirection(direction, Vector3.right * Mathf.Sign(position.x));
     }
 
     private void CheckAllPuckCollisions()
@@ -128,11 +118,11 @@ public class Puck : MonoBehaviour
     }
 
     // Reflect the direction based on the normal of the collision
-    float CalculateReflectionDirection(float puckDirection, Vector3 normal)
+    float CalculateReflectionDirection(float puckDirection, Vector3 wallNormal)
     {
         Vector3 directionVector = new Vector3(Mathf.Sin(puckDirection * Mathf.Deg2Rad), 0, Mathf.Cos(puckDirection * Mathf.Deg2Rad));
-
-        Vector3 reflectedDirection = directionVector - 2 * Vector3.Dot(directionVector, normal) * normal;
+        Vector3 reflectedDirection = directionVector - 2 * Vector3.Dot(directionVector, wallNormal) * wallNormal; // Sphere-Plane formula
+        //Vector3 reflectedDirection = Vector3.Reflect(directionVector, wallNormal); // Built in method
 
         return Mathf.Atan2(reflectedDirection.x, reflectedDirection.z) * Mathf.Rad2Deg;
     }
