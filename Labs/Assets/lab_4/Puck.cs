@@ -71,11 +71,15 @@ public class Puck : MonoBehaviour
     void CheckWallCollision()
     {
         // Check wall collision and reflect puck
-        if (position.z >= maxZ || position.z <= minZ)
-            CalculateReflectionDirection(direction, Vector3.forward * Mathf.Sign(position.z));
+        if (position.z >= maxZ || position.z <= minZ) {
+            direction = CalculateReflectionDirection(direction, Vector3.forward * Mathf.Sign(position.z));
+            transform.rotation = Quaternion.Euler(0f, direction, 0f);
+        }
 
-        if (position.x >= maxX || position.x <= minX)
-            CalculateReflectionDirection(direction, Vector3.right * Mathf.Sign(position.x));
+        if (position.x >= maxX || position.x <= minX) {
+            direction = CalculateReflectionDirection(direction, Vector3.right * Mathf.Sign(position.x));
+            transform.rotation = Quaternion.Euler(0f, direction, 0f);
+        }
     }
 
     private void CheckAllPuckCollisions()
@@ -106,7 +110,10 @@ public class Puck : MonoBehaviour
 
             // Reflection
             direction = CalculateReflectionDirection(direction, collisionNormal);
+            transform.rotation = Quaternion.Euler(0f, direction, 0f);
+
             otherPuck.direction = CalculateReflectionDirection(otherPuck.direction, collisionNormal);
+            otherPuck.transform.rotation = Quaternion.Euler(0f, otherPuck.direction, 0f);
 
             // Adjust the pucks' positions so they're not overlapping
             float overlap = radius + otherPuck.radius - distance;
