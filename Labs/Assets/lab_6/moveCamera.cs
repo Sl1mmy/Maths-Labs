@@ -41,8 +41,8 @@ public class moveCamera : MonoBehaviour
                 break;
         }
 
-        transform.position = nextPosition;
         transform.LookAt(nextPosition + (nextPosition - transform.position).normalized);
+        transform.position = nextPosition;
     }
 
 
